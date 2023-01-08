@@ -19,15 +19,23 @@ func ListenAndServe(server *http.Server) {
 	ctx, done := NewShutdownContext()
 	defer done()
 
+	failed := false
 	go func() {
 		err := server.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
+			failed = true
 			log.Printf("Error while listening and serving: %s\n", err.Error())
+			done()
 		}
 	}()
 
 	// Wait until we receive a signal
 	<-ctx.Done()
+
+	if failed {
+		// We failed to listen, bail out and don't do any shutdown tasks
+		return
+	}
 
 	// Restore default signal handling
 	done()
