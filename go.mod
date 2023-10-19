@@ -1,3 +1,3 @@
-module github.com/dnsge/signal-ctx
+module github.com/dnsge/sigctx
 
-go 1.18
+go 1.21
